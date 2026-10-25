@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>SANS: ETERNAL NIGHT — by EternalMorte</title>
+<style>
+:root{color-scheme:dark;--bg:#090711;--panel:#15101e;--line:#50304d;--orange:#ff9a35;--cyan:#66e8ff;--purple:#a55bff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#2a1030 0,#100b19 48%,#07060d 100%);color:#f4f0ff;font:16px/1.45 system-ui,Segoe UI,sans-serif}
+header{padding:18px 16px;border-bottom:1px solid #462744;background:#0a0810eF;position:sticky;top:0;z-index:3;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.brand{font-weight:900;letter-spacing:.07em;font-size:clamp(17px,3.4vw,25px)}.brand span{color:var(--orange)}.dev{font-size:12px;color:#b6a9c6;white-space:nowrap}
+main{max-width:1120px;margin:auto;padding:16px;display:grid;gap:16px}.panel{background:linear-gradient(145deg,#1b1022f2,#0d0a14f7);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 12px 36px #0005}
+.panelhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;border-bottom:1px solid #38243d;font-weight:800;letter-spacing:.13em}.status{font-size:12px;color:var(--orange);letter-spacing:.08em}
+canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#080812;touch-action:none}
+.hud{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:10px 14px 14px}.stat{border:1px solid #39243e;border-radius:12px;padding:10px 12px;min-width:0}.label{color:#a79ab7;font-size:11px;letter-spacing:.13em;text-transform:uppercase}.value{font-size:clamp(18px,3vw,25px);font-weight:900;font-variant-numeric:tabular-nums}.meter{height:6px;background:#30263a;border-radius:9px;overflow:hidden;margin-top:7px}.meter i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#61e8ff,#a45bff)}
+.controls{padding:0 14px 14px;color:#bdb2cb;font-size:13px}.key{display:inline-block;padding:4px 7px;margin:2px;border:1px solid #66536f;border-bottom-width:3px;border-radius:6px;color:white;background:#20192a;font-weight:800}
+.lower{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}.content{padding:16px}.buttons{display:flex;flex-wrap:wrap;gap:8px}.btn{border:1px solid #5b4568;background:#21182b;color:#f7f1ff;border-radius:11px;padding:11px 14px;font-weight:800;cursor:pointer;min-height:44px}.btn.primary{background:linear-gradient(120deg,#7633a2,#b14c54);border-color:#f4a15b}.btn.active{border-color:var(--orange);box-shadow:0 0 0 1px #ff9a3544 inset;color:#ffc27e}.btn:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}.small{font-size:12px;color:#b5a8c3}.records{display:grid;gap:7px}.record{display:grid;grid-template-columns:32px 1fr auto;gap:8px;align-items:center;padding:9px 10px;background:#100c18;border:1px solid #35243b;border-radius:9px}.rank{color:var(--orange);font-weight:900}.empty{padding:14px;text-align:center;color:#a99cb7;border:1px dashed #4a3652;border-radius:10px}
+#touch{display:none;position:fixed;bottom:12px;left:12px;right:12px;z-index:5;justify-content:space-between;pointer-events:none}.pad{display:grid;grid-template-columns:repeat(3,43px);grid-template-rows:repeat(2,43px);gap:4px;pointer-events:auto}.pad button,.actionpad button{background:#1a1224dd;color:#fff;border:1px solid #9270a0;border-radius:10px;font-weight:900;font-size:18px;touch-action:none}.pad .blank{visibility:hidden}.actionpad{display:grid;grid-template-columns:repeat(2,58px);gap:6px;align-content:end;pointer-events:auto}.actionpad button{font-size:12px}
+@media(max-width:650px){main{padding:9px;gap:10px}.lower{grid-template-columns:1fr}.hud{grid-template-columns:repeat(2,minmax(0,1fr))}.panelhead{font-size:13px}.dev{font-size:10px}.controls{font-size:11px}#touch{display:flex}body{padding-bottom:100px}.content{padding:13px}}
+</style></head>
+<body>
+<header><div class="brand">SANS: <span>ETERNAL NIGHT</span></div><div class="dev">HALLOWEEN EDITION · EternalMorte</div></header>
+<main>
+<section class="panel">
+ <div class="panelhead"><span>☠ БОЕВАЯ АРЕНА</span><span class="status" id="status">ГОТОВ К БОЮ</span></div>
+ <canvas id="game" width="960" height="540" aria-label="Боевая арена Sans"></canvas>
+ <div class="hud">
+  <div class="stat"><div class="label">Уровень</div><div class="value" id="level">001 / 1000</div></div>
+  <div class="stat"><div class="label">Очки</div><div class="value" id="score">000000</div></div>
+  <div class="stat"><div class="label">HP души</div><div class="value" id="hp">100%</div><div class="meter"><i id="hpbar"></i></div></div>
+  <div class="stat"><div class="label">Время боя</div><div class="value" id="time">00:00</div></div>
+ </div>
+ <div class="controls"><span class="key">WASD</span> / <span class="key">↑↓←→</span> движение · <span class="key">SPACE</span> прыжок · <span class="key">SHIFT</span> рывок · <span class="key">X</span> бластер · <span class="key">P</span> пауза</div>
+</section>
+<div class="lower">
+ <section class="panel"><div class="panelhead"><span>☾ НАСТРОЙКИ ЗАБЕГА</span><span class="status">1000 LVL</span></div><div class="content">
+ <div class="label" style="margin-bottom:8px">Скорость атаки</div><div class="buttons" id="speeds"><button class="btn" data-speed="0.75">Медленно</button><button class="btn active" data-speed="1">Средне</button><button class="btn" data-speed="1.35">Быстро</button></div>
+ <p class="small">Уклоняйся от костей, прыгай через низкие атаки и стреляй бластером по боссу. Каждые 5 уровней появляется усиленный босс.</p>
+ <div class="buttons"><button class="btn primary" id="start">▶ НАЧАТЬ / ПРОДОЛЖИТЬ</button><button class="btn" id="restart">↻ ЗАНОВО</button></div>
+ <div style="margin-top:14px" class="label">ПЕРЕЙТИ К УРОВНЮ</div><div class="buttons" style="margin-top:6px"><input id="jumpLevel" type="number" min="1" max="1000" value="1" style="width:120px;background:#0b0912;color:white;border:1px solid #57415e;border-radius:9px;padding:10px"><button class="btn" id="goLevel">Открыть</button></div>
+ </div></section>
+ <section class="panel"><div class="panelhead"><span>🏆 ЛОКАЛЬНЫЙ ТОП-5</span><span class="status">ЭТО УСТРОЙСТВО</span></div><div class="content"><div class="records" id="records"><div class="empty">Победи босса, чтобы записать результат.</div></div><p class="small">Рекорды сохраняются в браузере на этом устройстве. Онлайн-игроков и фальшивых счётчиков здесь нет.</p><div class="buttons"><button class="btn" id="nameBtn">Имя игрока</button><button class="btn" id="clear">Сбросить рекорды</button></div></div></section>
+</div>
+<section class="panel"><div class="panelhead"><span>DEVELOPER</span><a href="https://t.me/EternalMorte" target="_blank" rel="noopener" style="color:#72c9ff;text-decoration:none;letter-spacing:0">✈ @EternalMorte</a></div><div class="content small">SANS: ETERNAL NIGHT · Halloween Edition · Разработка: EternalMorte</div></section>
+</main>
+<div id="touch"><div class="pad"><button class="blank"> </button><button data-key="ArrowUp">▲</button><button class="blank"> </button><button data-key="ArrowLeft">◀</button><button data-key="ArrowDown">▼</button><button data-key="ArrowRight">▶</button></div><div class="actionpad"><button data-key="Space">JUMP</button><button data-key="Shift">DASH</button><button data-key="KeyX">BLASTER</button><button data-key="KeyP">PAUSE</button></div></div>
+<script>
+(()=>{'use strict';
+const c=document.getElementById('game'),ctx=c.getContext('2d'),W=c.width,H=c.height;
+const $=id=>document.getElementById(id);
+let level=1,score=0,hp=100,elapsed=0,running=false,paused=false,ended=false,speed=1,last=0,spawn=0,shotCd=0,invuln=0,flash=0,bossHP=100,bossMax=100,player={x:W*.5,y:H*.72,vx:0,vy:0,jump:0,dash:0,face:1},bones=[],shots=[],particles=[],floaters=[],keys={},touchKeys={},boss={x:W*.5,y:105,phase:0,warning:0,attack:0},name=localStorage.getItem('sansName')||'Player';
+const arena={x:46,y:44,w:W-92,h:H-88};
+const rnd=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function drawSans(x,y,scale=1,glow=true){ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);if(glow){ctx.shadowColor='#57eaff';ctx.shadowBlur=13}
+ // pixel-art hoodie/body
+ ctx.fillStyle='#171824';ctx.fillRect(-18,17,36,30);ctx.fillStyle='#d9d9e8';ctx.fillRect(-14,20,28,24);ctx.fillStyle='#242333';ctx.fillRect(-13,25,26,17);
+ ctx.fillStyle='#e9e9f4';ctx.fillRect(-22,-12,44,35);ctx.fillRect(-18,-24,36,13);ctx.fillRect(-14,-30,28,8);ctx.fillRect(-24,-7,8,17);ctx.fillRect(16,-7,8,17);
+ // skull jaw
+ ctx.fillStyle='#e9e9f4';ctx.fillRect(-17,-21,34,24);ctx.fillRect(-12,3,24,8);ctx.fillRect(-8,10,5,5);ctx.fillRect(3,10,5,5);
+ ctx.fillStyle='#11101c';ctx.fillRect(-12,-13,9,10);ctx.fillRect(4,-13,9,10);
+ ctx.shadowColor='#4feaff';ctx.shadowBlur=17;ctx.fillStyle='#5ef1ff';ctx.fillRect(-10,-11,5,5);ctx.fillRect(6,-11,5,5);
+ ctx.shadowBlur=0;ctx.fillStyle='#ff9b45';ctx.fillRect(7,-10,2,3);
+ ctx.fillStyle='#161522';ctx.fillRect(-8,5,16,2);ctx.fillRect(-5,8,3,2);ctx.fillRect(2,8,3,2);
+ // jacket and zipper
+ ctx.fillStyle='#34364c';ctx.fillRect(-18,20,36,6);ctx.fillStyle='#f6f0ff';ctx.fillRect(-1,22,2,22);
+ ctx.fillStyle='#f3f0ff';ctx.fillRect(-18,44,12,7);ctx.fillRect(6,44,12,7);
+ ctx.restore();}
+function drawBoss(x,y,scale=1){ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);ctx.shadowColor='#ff315f';ctx.shadowBlur=24;ctx.fillStyle='#eeeaf8';
+ ctx.fillRect(-36,-32,72,56);ctx.fillRect(-29,-42,58,12);ctx.fillRect(-22,24,44,11);ctx.fillRect(-15,35,9,12);ctx.fillRect(6,35,9,12);
+ ctx.shadowColor='#ff315f';ctx.shadowBlur=18;ctx.fillStyle='#190916';ctx.fillRect(-25,-18,17,19);ctx.fillRect(8,-18,17,19);
+ ctx.fillStyle=boss.warning>0?'#fff4a3':'#ff315f';ctx.fillRect(-23,-14,12,9);ctx.fillRect(11,-14,12,9);
+ ctx.shadowBlur=0;ctx.fillStyle='#1c1420';for(let i=-20;i<=20;i+=10)ctx.fillRect(i,11,5,7);
+ ctx.fillStyle='#342b42';ctx.fillRect(-46,-2,10,26);ctx.fillRect(36,-2,10,26);
+ ctx.restore();}
+function text(t,x,y,size,color='#fff',align='center'){ctx.save();ctx.font=`900 ${size}px system-ui`;ctx.textAlign=align;ctx.fillStyle=color;ctx.shadowColor=color;ctx.shadowBlur=10;ctx.fillText(t,x,y);ctx.restore()}
+function spawnBone(){let side=Math.floor(rnd(0,4)),x,y,vx,vy; if(side===0){x=rnd(arena.x,arena.x+arena.w);y=arena.y;vx=rnd(-65,65);vy=rnd(100,180)}else if(side===1){x=arena.x+arena.w;y=rnd(arena.y,arena.y+arena.h);vx=-rnd(130,210);vy=rnd(-40,40)}else if(side===2){x=rnd(arena.x,arena.x+arena.w);y=arena.y+arena.h;vx=rnd(-65,65);vy=-rnd(100,180)}else{x=arena.x;y=rnd(arena.y,arena.y+arena.h);vx=rnd(130,210);vy=rnd(-40,40)}bones.push({x,y,vx,vy,len:rnd(20,33),rot:rnd(0,6),low:Math.random()<.42})}
+function emit(x,y,color,n=10){for(let i=0;i<n;i++)particles.push({x,y,vx:rnd(-120,120),vy:rnd(-140,60),life:rnd(.25,.7),max:.7,color,size:rnd(2,5)})}
+function fire(){if(!running||paused||ended||shotCd>0)return;shotCd=.28;shots.push({x:player.x,y:player.y-12,vx:(boss.x-player.x)*.22,vy:-360});emit(player.x,player.y-10,'#65efff',3)}
+function start(){if(ended){reset();}running=true;paused=false;$('status').textContent='БОЙ ИДЁТ';$('start').textContent='Ⅱ ПАУЗА';}
+function reset(){level=1;score=0;hp=100;elapsed=0;bones=[];shots=[];particles=[];floaters=[];bossHP=bossMax=100;player.x=W*.5;player.y=H*.72;player.vx=player.vy=player.jump=player.dash=0;ended=false;paused=false;running=false;spawn=0;renderHud();draw();}
+function saveRecord(){let a=[];try{a=JSON.parse(localStorage.getItem('sansRecords')||'[]')}catch{}a.push({name,score,level,time:Math.floor(elapsed),date:new Date().toLocaleDateString()});a.sort((x,y)=>y.score-x.score);localStorage.setItem('sansRecords',JSON.stringify(a.slice(0,5)));renderRecords()}
+function renderRecords(){let a=[];try{a=JSON.parse(localStorage.getItem('sansRecords')||'[]')}catch{};$('records').innerHTML=a.length?a.map((r,i)=>`<div class="record"><span class="rank">#${i+1}</span><span><b>${esc(r.name)}</b><div class="small">LVL ${String(r.level).padStart(3,'0')} · ${r.date}</div></span><b>${String(r.score).padStart(6,'0')}</b></div>`).join(''):'<div class="empty">Победи босса, чтобы записать результат.</div>'}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderHud(){$('level').textContent=String(level).padStart(3,'0')+' / 1000';$('score').textContent=String(score).padStart(6,'0');$('hp').textContent=Math.ceil(hp)+'%';$('hpbar').style.width=hp+'%';$('time').textContent=String(Math.floor(elapsed/60)).padStart(2,'0')+':'+String(Math.floor(elapsed%60)).padStart(2,'0')}
+function hit(){if(invuln>0||player.dash>0)return;hp-=12;invuln=1.1;flash=.18;emit(player.x,player.y,'#ff4f76',15);if(hp<=0){hp=0;running=false;ended=true;$('status').textContent='ДУША ПОГАСЛА';saveRecord();text('GAME OVER',W/2,H/2,38,'#ff5079');text('Нажми «Заново» для нового забега',W/2,H/2+38,17)}}
+function update(dt){if(!running||paused||ended)return;elapsed+=dt;shotCd=Math.max(0,shotCd-dt);invuln=Math.max(0,invuln-dt);flash=Math.max(0,flash-dt);spawn-=dt;
+ const up=keys.ArrowUp||keys.KeyW||touchKeys.ArrowUp,down=keys.ArrowDown||keys.KeyS||touchKeys.ArrowDown,left=keys.ArrowLeft||keys.KeyA||touchKeys.ArrowLeft,right=keys.ArrowRight||keys.KeyD||touchKeys.ArrowRight;
+ let dx=(right?1:0)-(left?1:0),dy=(down?1:0)-(up?1:0),mag=Math.hypot(dx,dy)||1;player.vx=dx/mag*230;player.vy=dy/mag*210;
+ if(player.dash>0){player.dash-=dt;player.x+=player.dashVx*dt;player.y+=player.dashVy*dt}else{player.x+=player.vx*dt;player.y+=player.vy*dt}
+ player.x=clamp(player.x,arena.x+25,arena.x+arena.w-25);player.y=clamp(player.y,arena.y+35,arena.y+arena.h-24);
+ player.jump=Math.max(0,player.jump-dt);boss.x=W/2+Math.sin(elapsed*.8)*W*.27;boss.y=arena.y+65+Math.sin(elapsed*1.6)*13;boss.warning=Math.max(0,boss.warning-dt);boss.attack-=dt;
+ if(boss.attack<=0){boss.attack= Math.max(.65,1.45-level*.0006)/speed;boss.warning=.45/speed;let pattern=Math.floor(rnd(0,3));if(pattern===0){for(let i=0;i<5+Math.floor(level/80);i++)bones.push({x:arena.x+20+i*(arena.w-40)/(4+Math.floor(level/80)),y:arena.y+5,vx:0,vy:220*speed,len:30,rot:Math.PI/2,low:true})}else if(pattern===1){for(let i=0;i<7;i++){let a=(i/7)*Math.PI*2+elapsed; bones.push({x:boss.x,y:boss.y,vx:Math.cos(a)*170*speed,vy:Math.sin(a)*170*speed,len:26,rot:a,low:false})}}else{for(let i=0;i<3;i++)bones.push({x:arena.x+arena.w,y:arena.y+80+i*110,vx:-240*speed,vy:0,len:36,rot:0,low:true})}}
+ if(spawn<=0){spawn=Math.max(.25,.95-level*.0005)/speed; if(bones.length<26)spawnBone()}
+ for(let b of bones){b.x+=b.vx*dt*speed;b.y+=b.vy*dt*speed;b.rot+=dt*2; if(Math.hypot(b.x-player.x,b.y-(player.y-player.jump*75))<23+b.len*.18)hit()}
+ bones=bones.filter(b=>b.x>arena.x-70&&b.x<arena.x+arena.w+70&&b.y>arena.y-70&&b.y<arena.y+arena.h+70);
+ for(let s of shots){s.x+=s.vx*dt;s.y+=s.vy*dt;if(Math.hypot(s.x-boss.x,s.y-boss.y)<48){bossHP-=18;score+=20;emit(s.x,s.y,'#62efff',8);s.dead=true}}
+ shots=shots.filter(s=>!s.dead&&s.y>arena.y-20);
+ for(let p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=80*dt;p.life-=dt}particles=particles.filter(p=>p.life>0);
+ if(bossHP<=0){score+=1000+level*15;emit(boss.x,boss.y,'#ff9b35',40);if(level%5===0){bossMax+=8}level=Math.min(1000,level+1);bossHP=bossMax;hp=Math.min(100,hp+8);bones=[];if(level>=1000){running=false;ended=true;$('status').textContent='ПОБЕДА!';saveRecord()}}
+ renderHud()}
+function draw(){ctx.clearRect(0,0,W,H);ctx.fillStyle='#080812';ctx.fillRect(0,0,W,H);
+ // atmospheric grid and fog
+ ctx.save();for(let i=0;i<18;i++){let x=(i*79+elapsed*8)%W;ctx.fillStyle=`rgba(135,53,158,${.025+((i%3)*.012)})`;ctx.beginPath();ctx.arc(x,60+(i*47)%440,20+(i%4)*9,0,Math.PI*2);ctx.fill()}
+ ctx.strokeStyle='#28172f';ctx.lineWidth=1;for(let x=arena.x;x<arena.x+arena.w;x+=24){ctx.beginPath();ctx.moveTo(x,arena.y);ctx.lineTo(x,arena.y+arena.h);ctx.stroke()}for(let y=arena.y;y<arena.y+arena.h;y+=24){ctx.beginPath();ctx.moveTo(arena.x,y);ctx.lineTo(arena.x+arena.w,y);ctx.stroke()}
+ ctx.shadowColor='#ff326e';ctx.shadowBlur=18;ctx.strokeStyle='#b82d5c';ctx.lineWidth=4;ctx.strokeRect(arena.x,arena.y,arena.w,arena.h);ctx.shadowBlur=0;
+ // pumpkin icons
+ text('🎃',arena.x+arena.w-22,arena.y+28,22,'#ff9b35');text('✦',arena.x+25,arena.y+32,16,'#ff9b35');
+ if(running&&!paused&&!ended){drawBoss(boss.x,boss.y,1.1);ctx.fillStyle='#321b31';ctx.fillRect(boss.x-43,boss.y-57,86,6);ctx.fillStyle='#ff3d6b';ctx.fillRect(boss.x-43,boss.y-57,86*clamp(bossHP/bossMax,0,1),6);
+ if(boss.warning>0){ctx.strokeStyle='#ffcb69';ctx.lineWidth=3;ctx.setLineDash([8,7]);ctx.beginPath();ctx.arc(boss.x,boss.y,60+Math.sin(elapsed*28)*8,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);text('АТАКА!',boss.x,boss.y-72,14,'#ffc76d')}}
+ for(let b of bones){ctx.save();ctx.translate(b.x,b.y);ctx.rotate(b.rot);ctx.shadowColor='#eaf7ff';ctx.shadowBlur=10;ctx.fillStyle='#f4f0ff';ctx.fillRect(-b.len/2,-4,b.len,8);ctx.fillRect(-b.len/2-3,-7,7,14);ctx.fillRect(b.len/2-4,-7,7,14);ctx.restore()}
+ for(let s of shots){ctx.save();ctx.shadowColor='#62efff';ctx.shadowBlur=18;ctx.fillStyle='#7df4ff';ctx.beginPath();ctx.arc(s.x,s.y,6,0,Math.PI*2);ctx.fill();ctx.restore()}
+ if(invuln>0&&Math.floor(elapsed*18)%2===0){}else drawSans(player.x,player.y-player.jump*75,1.08,true);
+ if(player.dash>0){ctx.globalAlpha=.28;drawSans(player.x-player.dashVx*.05,player.y-player.jump*75,1.08,false);ctx.globalAlpha=1}
+ for(let p of particles){ctx.globalAlpha=clamp(p.life/p.max,0,1);ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,p.size,p.size)}ctx.globalAlpha=1;
+ ctx.restore();
+ if(!running&&!ended){text('SANS: ETERNAL NIGHT',W/2,H*.42,31,'#f5eaff');text('Нажми «НАЧАТЬ»',W/2,H*.51,18,'#ffb05b');text('Прыгай · уклоняйся · побеждай босса',W/2,H*.57,14,'#bdb1cf')}
+ if(paused){ctx.fillStyle='#080711b9';ctx.fillRect(0,0,W,H);text('ПАУЗА',W/2,H/2,38,'#ffb05b');text('Нажми P, чтобы продолжить',W/2,H/2+35,16)}
+ if(ended&&hp>0){ctx.fillStyle='#090711c9';ctx.fillRect(0,0,W,H);text('ПОБЕДА!',W/2,H/2-8,42,'#ffb05b');text('Ты прошёл все 1000 уровней!',W/2,H/2+30,18)}
+}
+function loop(t){let dt=Math.min(.033,(t-last)/1000||0);last=t;update(dt);draw();requestAnimationFrame(loop)}
+function dash(){if(!running||paused||player.dash>0)return;let dx=player.vx,dy=player.vy;if(!dx&&!dy)dx=player.face*1;let m=Math.hypot(dx,dy)||1;player.dashVx=dx/m*650;player.dashVy=dy/m*650;player.dash=.16;invuln=.25;emit(player.x,player.y,'#8d65ff',9)}
+function jump(){if(running&&!paused&&player.jump<=0)player.jump=1}
+window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();keys[e.code]=true;if(e.repeat)return;if(e.code==='Space')jump();if(e.code==='Shift')dash();if(e.code==='KeyX')fire();if(e.code==='KeyP'||e.code==='Escape'){if(running){paused=!paused;$('status').textContent=paused?'ПАУЗА':'БОЙ ИДЁТ';$('start').textContent=paused?'▶ ПРОДОЛЖИТЬ':'Ⅱ ПАУЗА'}}if(e.code==='Enter'&&!running)start()});
+window.addEventListener('keyup',e=>keys[e.code]=false);
+document.querySelectorAll('[data-key]').forEach(b=>{const k=b.dataset.key;const on=e=>{e.preventDefault();touchKeys[k]=true;if(k==='Space')jump();if(k==='Shift')dash();if(k==='KeyX')fire();if(k==='KeyP'&&running){paused=!paused;$('status').textContent=paused?'ПАУЗА':'БОЙ ИДЁТ'}};const off=e=>{e.preventDefault();touchKeys[k]=false};b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('pointerleave',off)});
+$('start').onclick=()=>{if(running){paused=!paused;$('status').textContent=paused?'ПАУЗА':'БОЙ ИДЁТ';$('start').textContent=paused?'▶ ПРОДОЛЖИТЬ':'Ⅱ ПАУЗА'}else start()};
+$('restart').onclick=()=>{reset();start()};$('speeds').querySelectorAll('button').forEach(b=>b.onclick=()=>{speed=Number(b.dataset.speed);$('speeds').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b))});
+$('goLevel').onclick=()=>{level=clamp(parseInt($('jumpLevel').value)||1,1,1000);bossMax=100+Math.floor(level/5)*8;bossHP=bossMax;score=Math.max(score,(level-1)*100);bones=[];shots=[];hp=100;renderHud();start()};
+$('nameBtn').onclick=()=>{let n=prompt('Имя игрока:',name);if(n&&n.trim()){name=n.trim().slice(0,18);localStorage.setItem('sansName',name);renderRecords()}};
+$('clear').onclick=()=>{if(confirm('Удалить локальные рекорды?')){localStorage.removeItem('sansRecords');renderRecords()}};
+renderHud();renderRecords();draw();requestAnimationFrame(loop);
+})();
+</script></body></html>
